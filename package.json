@@ -1,7 +1,14 @@
 {
 	"name": "mtarh-react-code-gen",
 	"displayName": "mtarh-react-code-gen",
-	"description": "",
+	"description": "VS Code extension for generating React components",
+	"author": {
+		"name": "Maksim Tarhunakau",
+		"email": "blrplex@gmail.com"
+	},
+	"repository": {
+		"url": "https://github.com/BLRplex/mtarh-react-code-gen"
+	},
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.37.0"
