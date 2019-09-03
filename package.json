@@ -9,7 +9,7 @@
 	"repository": {
 		"url": "https://github.com/BLRplex/mtarh-react-code-gen"
 	},
-	"publisher": "maksimtarhunakau",
+	"publisher": "maksim.tarhunakau",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.37.0"
