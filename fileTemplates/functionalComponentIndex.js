@@ -1,5 +1,5 @@
-module.exports = function (componentName, { withContainer }) {
-	return `import ${componentName} from './${withContainer ? 'container' : 'component'}'
+module.exports = function (componentName, { withConnect }) {
+	return `import ${componentName} from './${withConnect ? 'container' : 'component'}'
 
 export default ${componentName}
 `;
