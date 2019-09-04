@@ -17,29 +17,29 @@ function createFolder (rootPath, componentName) {
 	fs.mkdirSync(`${rootPath}/${componentName}`);
 }
 
-function createFile (rootPath, componentName, fileName, type) {
+function createFile (rootPath, componentName, fileName, type, settings = {}) {
 	const targetPath = `${rootPath}/${componentName}/${fileName}`
-	const fileContent = generateFileContent(componentName, type)
+	const fileContent = generateFileContent(componentName, type, settings)
 
 	fs.writeFileSync(targetPath, fileContent);
 }
 
-function generateFileContent (componentName, type) {
+function generateFileContent (componentName, type, settings = {}) {
 	switch (type) {
 		case FUNCTIONAL_COMPONENT_TYPE:
-			return generateFunctionalComponentFile(componentName)
+			return generateFunctionalComponentFile(componentName, settings)
 
 		case CLASS_COMPONENT_TYPE:
-			return generateClassComponentFile(componentName)
+			return generateClassComponentFile(componentName, settings)
 
 		case COMPONENT_INDEX_TYPE:
-			return generateFunctionalComponentIndexFile(componentName)
+			return generateFunctionalComponentIndexFile(componentName, settings)
 
 		case STYLED_COMPONENT_STYLES_TYPE:
-			return generateStyledComponentStylesFile()
+			return generateStyledComponentStylesFile(componentName, settings)
 
 		case COMPONENT_CONTAINER_TYPE:
-			return generateComponentContainerFile(componentName)
+			return generateComponentContainerFile(componentName, settings)
 
 		default:
 			return ''

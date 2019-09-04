@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 
 const { capitalize } = require('./utils/stringUtils')
+const viewTemplate = require('./viewTemplates')
 
 const {
 	createFile,
@@ -39,34 +40,96 @@ exports.activate = activate;
 
 function deactivate() {}
 
+function isAllowedConstructor(type) {
+	switch (type) {
+		case CLASS_COMPONENT_TYPE: return true
+		default: return false
+	}
+}
+
+function createConfigurationPanel(type, onPanelSubmitted) {
+	const panel = vscode
+		.window
+		.createWebviewPanel(
+			'componentSettings',
+			'Component Settings',
+			vscode.ViewColumn.One,
+			{
+				enableScripts: true,
+			}
+		);
+	
+	panel
+		.webview
+		.html = viewTemplate(type, {
+			withConstructor: isAllowedConstructor(type),
+			withPropTypes: true,
+			withConnect: true,
+			withStyledComponents: true,
+		})
+
+	panel
+		.webview
+		.onDidReceiveMessage(function ({ data }) {
+			onPanelSubmitted(data)
+		})
+
+	return panel
+}
+
 function generateFunctionalComponent(uri) {
 	const { fsPath } = uri;
 
-	vscode
-		.window
-		.showInputBox()
-		.then(function (componentName) {
-			if (!componentName) {
-				throw new Error('Component name should be filled');
-			}
+	const panel = createConfigurationPanel(FUNCTIONAL_COMPONENT_TYPE, function (data) {
+		const {
+			componentName,
+			withPropTypes,
+			withConnect,
+			withStyledComponents,
+		} = data
 
-			const name = capitalize(componentName)
+		panel.dispose()
 
-			createFolder(fsPath, name);
-			createFile(fsPath, name, 'component.jsx', FUNCTIONAL_COMPONENT_TYPE);
-			createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE);
-			createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
-			createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
+		if (!componentName) {
+			throw new Error('Component name should be filled');
+		}
+
+		const name = capitalize(componentName)
+
+		createFolder(fsPath, name);
+
+		createFile(fsPath, name, 'component.jsx', FUNCTIONAL_COMPONENT_TYPE, {
+			withPropTypes,
 		});
+
+		createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE, {
+			withConnect,
+		});
+
+		if (withStyledComponents) {
+			createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
+		}
+
+		if (withConnect) {
+			createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
+		}
+	})
 }
 
 function generateClassComponent(uri) {
 	const { fsPath } = uri;
 
-	vscode
-		.window
-		.showInputBox()
-		.then(function (componentName) {
+	const panel = createConfigurationPanel(CLASS_COMPONENT_TYPE, function (data) {
+		const {
+			componentName,
+			withConstructor,
+			withPropTypes,
+			withConnect,
+			withStyledComponents,
+		} = data
+
+			panel.dispose()
+
 			if (!componentName) {
 				throw new Error('Component name should be filled');
 			}
@@ -74,11 +137,24 @@ function generateClassComponent(uri) {
 			const name = capitalize(componentName)
 
 			createFolder(fsPath, name);
-			createFile(fsPath, name, 'component.jsx', CLASS_COMPONENT_TYPE);
-			createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE);
-			createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
-			createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
-		});
+
+			createFile(fsPath, name, 'component.jsx', CLASS_COMPONENT_TYPE, {
+				withConstructor,
+				withPropTypes,
+			});
+
+			createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE, {
+				withConnect,
+			});
+
+			if (withStyledComponents) {
+				createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
+			}
+			
+			if (withConnect) {
+				createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
+			}
+	})
 }
 
 module.exports = {
