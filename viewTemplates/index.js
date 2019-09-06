@@ -1,5 +1,9 @@
 const injectStyles = require('./injectStyles')
 const injectScripts = require('./injectScripts')
+const injectConstructorSettings = require('./injectConstructorSettings')
+const injectPropTypesSettings = require('./injectPropTypesSettings')
+const injectConnectSettings = require('./injectConnectSettings')
+const injectStyledComponentsSettings = require('./injectStyledComponentsSettings')
 
 module.exports = function (target, {
   withPropTypes,
@@ -26,25 +30,10 @@ module.exports = function (target, {
     <input type="text" id="componentName" />
   </div>
   
-  ${withConstructor ? `<div class="field-group">
-    <label for="generateConstructor">Generate Constructor</label>
-    <input type="checkbox" id="generateConstructor" />
-  </div>` : ''}
-  
-  ${withPropTypes ? `<div class="field-group">
-    <label for="generatePropTypes">Generate Prop Types</label>
-    <input type="checkbox" id="generatePropTypes" />
-  </div>` : ''}
-
-  ${withConnect ? `<div class="field-group">
-    <label for="generateConnect">Generate Connect</label>
-    <input type="checkbox" id="generateConnect" />
-  </div>` : ''}
-
-  ${withStyledComponents ? `<div class="field-group">
-    <label for="generateStyledComponents">Generate Styled Components</label>
-    <input type="checkbox" id="generateStyledComponents" />
-  </div>` : ''}
+  ${withConstructor ? injectConstructorSettings() : ''}
+  ${withPropTypes ? injectPropTypesSettings() : ''}
+  ${withConnect ? injectConnectSettings() : ''}
+  ${withStyledComponents ? injectStyledComponentsSettings() : ''}
   
   <div class="actions">
     <button id="submitButton">Save</button>

@@ -1,6 +1,11 @@
 module.exports = function () {
   return `
 <style>
+  body {
+    transform-origin: top left;
+    transform: scale(1.5);
+  }
+
   .field-group, .actions {
     display: flex;
     flex-direction: row;
