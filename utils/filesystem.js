@@ -1,10 +1,12 @@
 const fs = require('fs')
+const vscode = require('vscode')
 
 const generateClassComponentFile = require('../fileTemplates/classComponent')
 const generateFunctionalComponentFile = require('../fileTemplates/functionalComponent')
 const generateComponentContainerFile = require('../fileTemplates/componentContainer')
 const generateFunctionalComponentIndexFile = require('../fileTemplates/functionalComponentIndex')
 const generateStyledComponentStylesFile = require('../fileTemplates/styledComponentStyles')
+const generateStorybookFile = require('../fileTemplates/storybookFile')
 
 const FUNCTIONAL_COMPONENT_TYPE = 'FUNCTIONAL_COMPONENT_TYPE'
 const CLASS_COMPONENT_TYPE = 'CLASS_COMPONENT_TYPE'
@@ -12,9 +14,17 @@ const COMPONENT_INDEX_TYPE = 'COMPONENT_INDEX_TYPE'
 const COMPONENT_CONTAINER_TYPE = 'COMPONENT_CONTAINER_TYPE'
 
 const STYLED_COMPONENT_STYLES_TYPE = 'STYLED_COMPONENT_STYLES_TYPE'
+const STORYBOOK_FILE_TYPE = 'STORYBOOK_FILE_TYPE'
 
 function createFolder (rootPath, componentName) {
-	fs.mkdirSync(`${rootPath}/${componentName}`);
+	const folderName = `${rootPath}/${componentName}`
+	if (fs.existsSync(folderName)) {
+		vscode.window.showErrorMessage(`Folder with name \`${componentName}\` already exists!`)
+		return false
+	} else {
+		fs.mkdirSync(folderName);
+		return true
+	}
 }
 
 function createFile (rootPath, componentName, fileName, type, settings = {}) {
@@ -41,6 +51,9 @@ function generateFileContent (componentName, type, settings = {}) {
 		case COMPONENT_CONTAINER_TYPE:
 			return generateComponentContainerFile(componentName, settings)
 
+		case STORYBOOK_FILE_TYPE:
+			return generateStorybookFile(componentName, settings)
+
 		default:
 			return ''
 	}
@@ -52,6 +65,7 @@ module.exports = {
 	COMPONENT_CONTAINER_TYPE,
 	COMPONENT_INDEX_TYPE,
 	STYLED_COMPONENT_STYLES_TYPE,
+	STORYBOOK_FILE_TYPE,
 	createFolder,
 	createFile,
 }

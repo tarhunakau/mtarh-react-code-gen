@@ -4,12 +4,14 @@ const injectConstructorSettings = require('./injectConstructorSettings')
 const injectPropTypesSettings = require('./injectPropTypesSettings')
 const injectConnectSettings = require('./injectConnectSettings')
 const injectStyledComponentsSettings = require('./injectStyledComponentsSettings')
+const injectStorybookSettings = require('./injectStorybookSettings')
 
 module.exports = function (target, {
   withPropTypes,
   withConstructor,
   withConnect,
   withStyledComponents,
+  withStorybook,
 }) {
   return `
 <!doctype html>
@@ -34,6 +36,7 @@ module.exports = function (target, {
   ${withPropTypes ? injectPropTypesSettings() : ''}
   ${withConnect ? injectConnectSettings() : ''}
   ${withStyledComponents ? injectStyledComponentsSettings() : ''}
+  ${withStorybook ? injectStorybookSettings() : ''}
   
   <div class="actions">
     <button id="submitButton">Save</button>

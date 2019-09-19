@@ -26,6 +26,7 @@ module.exports = function (target) {
     const generatePropTypesElement = document.getElementById('generatePropTypes')
     const generateConnectElement = document.getElementById('generateConnect')
     const generateStyledComponentsElement = document.getElementById('generateStyledComponents')
+    const generateStorybookElement = document.getElementById('generateStorybook')
     
     const settings = {
       componentName: componentNameElement.value,
@@ -33,6 +34,7 @@ module.exports = function (target) {
       withPropTypes: generatePropTypesElement && generatePropTypesElement.checked,
       withConnect: generateConnectElement && generateConnectElement.checked,
       withStyledComponents: generateStyledComponents && generateStyledComponents.checked,
+      withStorybook: generateStorybookElement && generateStorybookElement.checked,
     }
     
     acquireVsCodeApi().postMessage({

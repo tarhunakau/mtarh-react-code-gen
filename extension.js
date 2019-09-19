@@ -11,6 +11,7 @@ const {
 	COMPONENT_CONTAINER_TYPE,
 	COMPONENT_INDEX_TYPE,
 	STYLED_COMPONENT_STYLES_TYPE,
+	STORYBOOK_FILE_TYPE,
 } = require('./utils/filesystem')
 
 /**
@@ -22,7 +23,7 @@ function activate(context) {
 		.push(
 			vscode.commands.registerCommand(
 				'extension.mtarhReactCodeGen.functionalComponent',
-				generateFunctionalComponent
+				generateComponent(FUNCTIONAL_COMPONENT_TYPE)
 			)
 		);
 	
@@ -31,7 +32,7 @@ function activate(context) {
 		.push(
 			vscode.commands.registerCommand(
 				'extension.mtarhReactCodeGen.classComponent',
-				generateClassComponent
+				generateComponent(CLASS_COMPONENT_TYPE)
 			)
 		);
 }
@@ -66,6 +67,7 @@ function createConfigurationPanel(type, onPanelSubmitted) {
 			withPropTypes: true,
 			withConnect: true,
 			withStyledComponents: true,
+			withStorybook: true,
 		})
 
 	panel
@@ -77,56 +79,19 @@ function createConfigurationPanel(type, onPanelSubmitted) {
 	return panel
 }
 
-function generateFunctionalComponent(uri) {
-	const { fsPath } = uri;
+function generateComponent(type) {
+	return function(uri) {
+		const { fsPath } = uri;
 
-	const panel = createConfigurationPanel(FUNCTIONAL_COMPONENT_TYPE, function (data) {
-		const {
-			componentName,
-			withPropTypes,
-			withConnect,
-			withStyledComponents,
-		} = data
-
-		panel.dispose()
-
-		if (!componentName) {
-			throw new Error('Component name should be filled');
-		}
-
-		const name = capitalize(componentName)
-
-		createFolder(fsPath, name);
-
-		createFile(fsPath, name, 'component.jsx', FUNCTIONAL_COMPONENT_TYPE, {
-			withPropTypes,
-		});
-
-		createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE, {
-			withConnect,
-		});
-
-		if (withStyledComponents) {
-			createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
-		}
-
-		if (withConnect) {
-			createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
-		}
-	})
-}
-
-function generateClassComponent(uri) {
-	const { fsPath } = uri;
-
-	const panel = createConfigurationPanel(CLASS_COMPONENT_TYPE, function (data) {
-		const {
-			componentName,
-			withConstructor,
-			withPropTypes,
-			withConnect,
-			withStyledComponents,
-		} = data
+		const panel = createConfigurationPanel(type, function (data) {
+			const {
+				componentName,
+				withConstructor,
+				withPropTypes,
+				withConnect,
+				withStyledComponents,
+				withStorybook,
+			} = data
 
 			panel.dispose()
 
@@ -136,25 +101,36 @@ function generateClassComponent(uri) {
 
 			const name = capitalize(componentName)
 
-			createFolder(fsPath, name);
+			if (createFolder(fsPath, name)) {
+				if (type === FUNCTIONAL_COMPONENT_TYPE) {
+					createFile(fsPath, name, 'component.jsx', FUNCTIONAL_COMPONENT_TYPE, {
+						withPropTypes,
+					});
+				} else if (type === CLASS_COMPONENT_TYPE) {
+					createFile(fsPath, name, 'component.jsx', CLASS_COMPONENT_TYPE, {
+						withConstructor,
+						withPropTypes,
+					});
+				}
 
-			createFile(fsPath, name, 'component.jsx', CLASS_COMPONENT_TYPE, {
-				withConstructor,
-				withPropTypes,
-			});
+				createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE, {
+					withConnect,
+				});
 
-			createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE, {
-				withConnect,
-			});
+				if (withStyledComponents) {
+					createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
+				}
 
-			if (withStyledComponents) {
-				createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
+				if (withConnect) {
+					createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
+				}
+
+				if (withStorybook) {
+					createFile(fsPath, name, 'stories.jsx', STORYBOOK_FILE_TYPE);
+				}
 			}
-			
-			if (withConnect) {
-				createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
-			}
-	})
+		})
+	}
 }
 
 module.exports = {
