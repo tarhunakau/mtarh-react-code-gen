@@ -7,8 +7,11 @@ const {
 	createFile,
 	createFolder,
 	FUNCTIONAL_COMPONENT_TYPE,
+	FUNCTIONAL_COMPONENT_TYPESCRIPT_TYPE,
 	CLASS_COMPONENT_TYPE,
+	CLASS_COMPONENT_TYPESCRIPT_TYPE,
 	COMPONENT_CONTAINER_TYPE,
+	COMPONENT_CONTAINER_TYPESCRIPT_TYPE,
 	COMPONENT_INDEX_TYPE,
 	STYLED_COMPONENT_STYLES_TYPE,
 	STORYBOOK_FILE_TYPE,
@@ -64,6 +67,7 @@ function createConfigurationPanel(type, onPanelSubmitted) {
 		.webview
 		.html = viewTemplate(type, {
 			withConstructor: isAllowedConstructor(type),
+			withTypeScript: true,
 			withPropTypes: true,
 			withConnect: true,
 			withStyledComponents: true,
@@ -86,6 +90,7 @@ function generateComponent(type) {
 		const panel = createConfigurationPanel(type, function (data) {
 			const {
 				componentName,
+				useTypeScript,
 				withConstructor,
 				withPropTypes,
 				withConnect,
@@ -101,32 +106,46 @@ function generateComponent(type) {
 
 			const name = capitalize(componentName)
 
+			const getFileName = (file) => `${file}.${useTypeScript ? 'ts' : 'js'}`
+			const getComponentName = () => `component.${useTypeScript ? 'tsx' : 'jsx'}`
+
 			if (createFolder(fsPath, name)) {
 				if (type === FUNCTIONAL_COMPONENT_TYPE) {
-					createFile(fsPath, name, 'component.jsx', FUNCTIONAL_COMPONENT_TYPE, {
+					const fileType = useTypeScript
+						? FUNCTIONAL_COMPONENT_TYPESCRIPT_TYPE
+						: FUNCTIONAL_COMPONENT_TYPE
+					createFile(fsPath, name, getComponentName(), fileType, {
+						withConnect,
 						withPropTypes,
 					});
 				} else if (type === CLASS_COMPONENT_TYPE) {
-					createFile(fsPath, name, 'component.jsx', CLASS_COMPONENT_TYPE, {
+					const fileType = useTypeScript
+						? CLASS_COMPONENT_TYPESCRIPT_TYPE
+						: CLASS_COMPONENT_TYPE
+					createFile(fsPath, name, getComponentName(), fileType, {
 						withConstructor,
 						withPropTypes,
+						withConnect,
 					});
 				}
 
-				createFile(fsPath, name, 'index.js', COMPONENT_INDEX_TYPE, {
+				createFile(fsPath, name, getFileName('index'), COMPONENT_INDEX_TYPE, {
 					withConnect,
 				});
 
 				if (withStyledComponents) {
-					createFile(fsPath, name, 'styles.js', STYLED_COMPONENT_STYLES_TYPE);
+					createFile(fsPath, name, getFileName('styles'), STYLED_COMPONENT_STYLES_TYPE);
 				}
 
 				if (withConnect) {
-					createFile(fsPath, name, 'container.js', COMPONENT_CONTAINER_TYPE);
+					const fileType = useTypeScript
+						? COMPONENT_CONTAINER_TYPESCRIPT_TYPE
+						: COMPONENT_CONTAINER_TYPE
+					createFile(fsPath, name, getFileName('container'), fileType);
 				}
 
 				if (withStorybook) {
-					createFile(fsPath, name, 'stories.jsx', STORYBOOK_FILE_TYPE);
+					createFile(fsPath, name, getFileName('storiesx'), STORYBOOK_FILE_TYPE);
 				}
 			}
 		})

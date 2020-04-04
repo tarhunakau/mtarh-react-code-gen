@@ -1,5 +1,6 @@
 const injectStyles = require('./injectStyles')
 const injectScripts = require('./injectScripts')
+const injectTypeScriptSettings = require('./injectTypeScriptSettings')
 const injectConstructorSettings = require('./injectConstructorSettings')
 const injectPropTypesSettings = require('./injectPropTypesSettings')
 const injectConnectSettings = require('./injectConnectSettings')
@@ -7,6 +8,7 @@ const injectStyledComponentsSettings = require('./injectStyledComponentsSettings
 const injectStorybookSettings = require('./injectStorybookSettings')
 
 module.exports = function (target, {
+  withTypeScript,
   withPropTypes,
   withConstructor,
   withConnect,
@@ -32,6 +34,7 @@ module.exports = function (target, {
     <input type="text" id="componentName" />
   </div>
   
+  ${withTypeScript ? injectTypeScriptSettings() : ''}
   ${withConstructor ? injectConstructorSettings() : ''}
   ${withPropTypes ? injectPropTypesSettings() : ''}
   ${withConnect ? injectConnectSettings() : ''}
