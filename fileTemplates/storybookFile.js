@@ -3,7 +3,7 @@ module.exports = function (componentName) {
 import { storiesOf } from '@storybook/react'
 import ${componentName} from './component'
 
-storiesOf(${componentName}, module)
+storiesOf('${componentName}', module)
   .add('default', () => (
     <${componentName} />
   ))

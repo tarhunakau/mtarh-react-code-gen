@@ -22,6 +22,7 @@ module.exports = function (target) {
   
   function handleSubmit () {
     const componentNameElement = document.getElementById('componentName')
+    const useTypeScriptElement = document.getElementById('useTypeScript')
     const generateConstructorElement = document.getElementById('generateConstructor')
     const generatePropTypesElement = document.getElementById('generatePropTypes')
     const generateConnectElement = document.getElementById('generateConnect')
@@ -30,6 +31,7 @@ module.exports = function (target) {
     
     const settings = {
       componentName: componentNameElement.value,
+      useTypeScript: useTypeScriptElement && useTypeScriptElement.checked,
       withConstructor: generateConstructorElement && generateConstructorElement.checked,
       withPropTypes: generatePropTypesElement && generatePropTypesElement.checked,
       withConnect: generateConnectElement && generateConnectElement.checked,
